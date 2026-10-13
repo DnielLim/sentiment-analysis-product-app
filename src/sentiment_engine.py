@@ -66,7 +66,7 @@ class SentimentEngine:
         Predict sentiment for a pandas DataFrame containing review texts.
         """
         if text_column not in df.columns:
-            raise ValueError(f"Kolom '{text_column}' tidak ditemukan dalam dataset.")
+            raise ValueError(f"Column '{text_column}' was not found in the dataset.")
             
         df_res = df.copy()
         df_res["cleaned_text"] = df_res[text_column].apply(lambda x: clean_text(str(x)))
@@ -83,8 +83,10 @@ class SentimentEngine:
         neg_idx = classes.index("negatif")
         
         df_res["prediksi_sentimen"] = preds
+        df_res["predicted_sentiment"] = [("Positive" if p == "positif" else "Negative") for p in preds]
         df_res["probabilitas_positif"] = probas[:, pos_idx]
         df_res["probabilitas_negatif"] = probas[:, neg_idx]
-        df_res["skor_kepercayaan"] = [float(probas[i, classes.index(p)]) for i, p in enumerate(preds)]
+        df_res["confidence_score"] = [float(probas[i, classes.index(p)]) for i, p in enumerate(preds)]
+        df_res["skor_kepercayaan"] = df_res["confidence_score"]
         
         return df_res

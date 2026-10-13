@@ -61,12 +61,10 @@ class SentimentModelTrainer:
         self.y_test = y_te
         self.test_indices = idx_te
         
-        return len(self.X_train), len(self.X_test)
-
-    def train_models(self):
-        if self.X_train is None:
-            self.load_and_prepare_data()
-            
+    def train_models(self, df_input=None):
+        """Train both CountVectorizer and TF-IDF Multinomial Naive Bayes models."""
+        self.load_and_prepare_data(df_input=df_input)
+        
         # -------------------------------------------------------------
         # Experiment 1: Multinomial Naive Bayes + Word Frequency (CountVectorizer)
         # -------------------------------------------------------------
@@ -98,7 +96,7 @@ class SentimentModelTrainer:
         
         # Compute metrics for Model 1 (Count Vectorizer)
         self.results["count"] = self._compute_metrics(
-            "Naive Bayes (Frekuensi Kata)",
+            "Naive Bayes (Word Frequency)",
             self.y_test, y_pred_count, y_proba_count, classes, self.test_indices
         )
         
@@ -117,7 +115,7 @@ class SentimentModelTrainer:
         report_dict = classification_report(y_true, y_pred, output_dict=True, zero_division=0)
         cm = confusion_matrix(y_true, y_pred, labels=classes)
         
-        # Identify misclassified samples (Pemeriksaan Contoh Salah Prediksi)
+        # Identify misclassified samples (Error Analysis)
         misclassified = []
         for idx, true_lbl, pred_lbl, proba in zip(test_indices, y_true, y_pred, y_proba):
             if true_lbl != pred_lbl:
@@ -129,14 +127,15 @@ class SentimentModelTrainer:
                 pred_idx = classes.index(pred_lbl)
                 confidence = proba[pred_idx]
                 
+                label_display_map = {"positif": "Positive", "negatif": "Negative"}
                 misclassified.append({
                     "Index": idx,
-                    "Kategori": kat,
-                    "Ulasan Asli": orig_text,
-                    "Ulasan Bersih": clean_text_val,
-                    "Label Sebenarnya": true_lbl,
-                    "Prediksi Model": pred_lbl,
-                    "Kepercayaan": f"{confidence * 100:.1f}%"
+                    "Category": kat,
+                    "Original Review": orig_text,
+                    "Cleaned Review": clean_text_val,
+                    "True Label": label_display_map.get(true_lbl, str(true_lbl).title()),
+                    "Predicted Label": label_display_map.get(pred_lbl, str(pred_lbl).title()),
+                    "Confidence": f"{confidence * 100:.1f}%"
                 })
                 
         df_misclassified = pd.DataFrame(misclassified)
@@ -178,8 +177,8 @@ class SentimentModelTrainer:
         top_negative_words = [(feature_names[i], np.exp(log_prob_neg[i])) for i in top_neg_idx]
         
         return {
-            "positive": pd.DataFrame(top_positive_words, columns=["Kata/Frasa", "Skor Bobot"]),
-            "negative": pd.DataFrame(top_negative_words, columns=["Kata/Frasa", "Skor Bobot"])
+            "positive": pd.DataFrame(top_positive_words, columns=["Word/Phrase", "Weight Score"]),
+            "negative": pd.DataFrame(top_negative_words, columns=["Word/Phrase", "Weight Score"])
         }
 
 if __name__ == "__main__":
@@ -187,8 +186,8 @@ if __name__ == "__main__":
     results = trainer.train_models()
     print("--- COUNT VECTORIZER RESULTS ---")
     print(f"Accuracy: {results['count']['accuracy']:.4f}, F1: {results['count']['f1_score']:.4f}")
-    print(f"Salah prediksi: {results['count']['total_misclassified']} dari {results['count']['total_test']}")
+    print(f"Misclassified: {results['count']['total_misclassified']} of {results['count']['total_test']}")
     
     print("\n--- TF-IDF VECTORIZER RESULTS ---")
     print(f"Accuracy: {results['tfidf']['accuracy']:.4f}, F1: {results['tfidf']['f1_score']:.4f}")
-    print(f"Salah prediksi: {results['tfidf']['total_misclassified']} dari {results['tfidf']['total_test']}")
+    print(f"Misclassified: {results['tfidf']['total_misclassified']} of {results['tfidf']['total_test']}")

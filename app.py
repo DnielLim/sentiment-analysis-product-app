@@ -11,7 +11,7 @@ from src.preprocessing import clean_text
 
 # Page Config
 st.set_page_config(
-    page_title="Dashboard Analisis Sentimen Ulasan Produk & Aplikasi",
+    page_title="Product & App Review Sentiment Analysis Dashboard",
     page_icon="🛍️",
     layout="wide",
     initial_sidebar_state="expanded"
@@ -31,7 +31,7 @@ st.markdown("""
         color: #f1f5f9;
     }
     
-    /* Fix Streamlit Top White Bar */
+    /* Fix Streamlit Top Bar */
     header, [data-testid="stHeader"], .stAppHeader, [data-testid="stAppHeader"], div[id*="stHeader"], [data-testid="stToolbar"] {
         background-color: #0b0f19 !important;
         background: #0b0f19 !important;
@@ -99,94 +99,83 @@ st.markdown("""
         display: flex;
         align-items: center;
         justify-content: center;
-        font-size: 1.4rem;
+        font-size: 24px;
     }
     .sidebar-brand-text {
+        font-size: 1.15rem;
         font-weight: 700;
-        font-size: 1.1rem;
         color: #ffffff;
     }
     .sidebar-brand-sub {
-        font-size: 0.78rem;
+        font-size: 0.8rem;
         color: #94a3b8;
     }
-
+    
     /* Metric Cards */
     .metric-card {
-        background: #161e2e;
-        border: 1px solid #232f48;
-        padding: 20px 22px;
-        border-radius: 16px;
+        background: rgba(30, 41, 59, 0.6);
+        border: 1px solid #334155;
+        border-radius: 14px;
+        padding: 18px 20px;
         text-align: center;
-        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
         transition: transform 0.2s ease, border-color 0.2s ease;
-        position: relative;
     }
     .metric-card:hover {
         transform: translateY(-2px);
-        border-color: #4f46e5;
-    }
-    .metric-value {
-        font-size: 2.1rem;
-        font-weight: 800;
-        color: #38bdf8;
-        letter-spacing: -0.02em;
-        margin: 4px 0;
+        border-color: #6366f1;
     }
     .metric-label {
         font-size: 0.85rem;
-        font-weight: 600;
         color: #94a3b8;
+        font-weight: 600;
         text-transform: uppercase;
-        letter-spacing: 0.06em;
+        letter-spacing: 0.05em;
+        margin-bottom: 6px;
+    }
+    .metric-value {
+        font-size: 1.8rem;
+        font-weight: 800;
+        color: #ffffff;
     }
     .metric-sub {
-        font-size: 0.8rem;
+        font-size: 0.78rem;
         color: #64748b;
         margin-top: 4px;
     }
-
-    /* Sentiment Badges */
-    .badge-container {
-        display: flex;
-        align-items: center;
-        gap: 16px;
-        padding: 16px 20px;
-        border-radius: 16px;
-        margin-bottom: 20px;
-    }
+    
+    /* Sentiment Result Badges */
     .badge-positive {
-        background: linear-gradient(135deg, rgba(16, 185, 129, 0.15) 0%, rgba(5, 150, 105, 0.25) 100%);
-        border: 1.5px solid #10b981;
-        color: #34d399;
-        font-weight: 800;
-        font-size: 1.3rem;
-        padding: 12px 24px;
-        border-radius: 14px;
         display: inline-flex;
         align-items: center;
-        gap: 10px;
-        box-shadow: 0 10px 25px -5px rgba(16, 185, 129, 0.3);
+        gap: 8px;
+        padding: 14px 24px;
+        background: linear-gradient(135deg, rgba(16, 185, 129, 0.2) 0%, rgba(5, 150, 105, 0.3) 100%);
+        border: 1px solid #10b981;
+        border-radius: 14px;
+        color: #34d399;
+        font-weight: 700;
+        font-size: 1.4rem;
+        box-shadow: 0 10px 25px -5px rgba(16, 185, 129, 0.25);
     }
     .badge-negative {
-        background: linear-gradient(135deg, rgba(244, 63, 94, 0.15) 0%, rgba(225, 29, 72, 0.25) 100%);
-        border: 1.5px solid #f43f5e;
-        color: #fb7185;
-        font-weight: 800;
-        font-size: 1.3rem;
-        padding: 12px 24px;
-        border-radius: 14px;
         display: inline-flex;
         align-items: center;
-        gap: 10px;
-        box-shadow: 0 10px 25px -5px rgba(244, 63, 94, 0.3);
+        gap: 8px;
+        padding: 14px 24px;
+        background: linear-gradient(135deg, rgba(244, 63, 94, 0.2) 0%, rgba(225, 29, 72, 0.3) 100%);
+        border: 1px solid #f43f5e;
+        border-radius: 14px;
+        color: #fb7185;
+        font-weight: 700;
+        font-size: 1.4rem;
+        box-shadow: 0 10px 25px -5px rgba(244, 63, 94, 0.25);
     }
-
-    /* Word Chips */
+    
+    /* Highlight Chips */
     .chip {
         display: inline-block;
-        padding: 6px 14px;
-        border-radius: 20px;
+        padding: 4px 12px;
+        border-radius: 9999px;
         font-size: 0.85rem;
         font-weight: 600;
         margin: 4px;
@@ -247,61 +236,61 @@ with st.sidebar:
         <div class="sidebar-brand-icon">🤖</div>
         <div>
             <div class="sidebar-brand-text">AI Sentiment Lab</div>
-            <div class="sidebar-brand-sub">Produk & Aplikasi Review</div>
+            <div class="sidebar-brand-sub">Product & App Reviews</div>
         </div>
     </div>
     """, unsafe_allow_html=True)
     
-    st.subheader("⚙️ Pengaturan Algoritma")
+    st.subheader("⚙️ Algorithm Settings")
     
     active_model_key = st.radio(
-        "Pilih Ekstraktor Fitur Teks:",
+        "Select Text Feature Extractor:",
         options=["tfidf", "count"],
-        format_func=lambda x: "Multinomial Naive Bayes (TF-IDF)" if x == "tfidf" else "Multinomial Naive Bayes (Frekuensi Kata)",
-        help="Bandingkan performa Naive Bayes menggunakan pembobotan TF-IDF vs Frekuensi Kata (CountVectorizer)."
+        format_func=lambda x: "Multinomial Naive Bayes (TF-IDF)" if x == "tfidf" else "Multinomial Naive Bayes (Word Frequency)",
+        help="Compare Naive Bayes performance using TF-IDF weighting vs. Word Frequency (CountVectorizer)."
     )
     
-    selected_model_name = "TF-IDF" if active_model_key == "tfidf" else "Frekuensi Kata"
+    selected_model_name = "TF-IDF" if active_model_key == "tfidf" else "Word Frequency"
     active_results = results[active_model_key]
     
     st.divider()
-    st.subheader("📊 Statistik Dataset Latih")
+    st.subheader("📊 Training Dataset Statistics")
     st.markdown(f"""
-    - 📦 **Total Dataset:** `{len(trainer.df)} ulasan`
-    - 🏋️ **Data Latih (80%):** `{len(trainer.X_train)} ulasan`
-    - 🧪 **Data Uji (20%):** `{len(trainer.X_test)} ulasan`
+    - 📦 **Total Dataset:** `{len(trainer.df)} reviews`
+    - 🏋️ **Training Set (80%):** `{len(trainer.X_train)} reviews`
+    - 🧪 **Test Set (20%):** `{len(trainer.X_test)} reviews`
     - 🎯 **Split Method:** `Stratified Split (random_state=42)`
     """)
     
     st.write("")
-    if st.button("🔄 Latih Ulang Model", use_container_width=True, type="secondary"):
+    if st.button("🔄 Retrain Models", use_container_width=True, type="secondary"):
         st.cache_resource.clear()
         st.rerun()
 
 # Hero Header Banner
 st.markdown("""
 <div class="hero-card">
-    <div class="hero-title">🛍️ Dashboard Analisis Sentimen Ulasan Produk & Aplikasi</div>
+    <div class="hero-title">🛍️ Product & App Review Sentiment Analysis Dashboard</div>
     <div class="hero-subtitle">
-        Sistem klasifikasi teks terawasi menggunakan algoritma <b>Multinomial Naive Bayes</b> untuk mengelompokkan ulasan pengguna ke dalam kategori <b>Positif</b> atau <b>Negatif</b>. Mendukung evaluasi perbandingan fitur <b>Frekuensi Kata (CountVectorizer)</b> dan <b>TF-IDF</b> secara interaktif.
+        Supervised text classification system utilizing the <b>Multinomial Naive Bayes</b> algorithm to categorize customer reviews into <b>Positive</b> or <b>Negative</b> sentiment. Features interactive side-by-side performance evaluation between <b>Word Frequency (CountVectorizer)</b> and <b>TF-IDF</b> feature extractors.
     </div>
 </div>
 """, unsafe_allow_html=True)
 
 # Main Navigation Tabs
 tab1, tab2, tab3, tab4 = st.tabs([
-    "📊 Evaluasi & Perbandingan Model",
-    "✍️ Prediksi Ulasan Tunggal",
-    "📁 Prediksi Massal & Ekspor",
-    "📖 Eksplorasi Dataset & Teori"
+    "📊 Model Evaluation & Comparison",
+    "✍️ Single Review Prediction",
+    "📁 Batch Prediction & Export",
+    "📖 Dataset Explorer & Theory"
 ])
 
 # ==============================================================================
 # TAB 1: MODEL EVALUATION & COMPARISON
 # ==============================================================================
 with tab1:
-    st.header("📊 Evaluasi & Perbandingan Performa Model")
-    st.markdown("Perbandingan eksperimen **Multinomial Naive Bayes** menggunakan fitur **Frekuensi Kata** vs **TF-IDF** pada pembagian data uji yang **sama persis** (20% test split).")
+    st.header("📊 Model Performance Evaluation & Comparison")
+    st.markdown("Experimental comparison of **Multinomial Naive Bayes** using **Word Frequency** vs. **TF-IDF** on the **exact same** stratified test split (20% test split).")
     
     count_res = results["count"]
     tfidf_res = results["tfidf"]
@@ -320,7 +309,7 @@ with tab1:
     with col_m2:
         st.markdown(f"""
         <div class="metric-card">
-            <div class="metric-label">Precision Weighted</div>
+            <div class="metric-label">Weighted Precision</div>
             <div class="metric-value">{tfidf_res['precision']*100:.1f}%</div>
             <div class="metric-sub">TF-IDF vs {count_res['precision']*100:.1f}% Count</div>
         </div>
@@ -329,7 +318,7 @@ with tab1:
     with col_m3:
         st.markdown(f"""
         <div class="metric-card">
-            <div class="metric-label">Recall Weighted</div>
+            <div class="metric-label">Weighted Recall</div>
             <div class="metric-value">{tfidf_res['recall']*100:.1f}%</div>
             <div class="metric-sub">TF-IDF vs {count_res['recall']*100:.1f}% Count</div>
         </div>
@@ -338,7 +327,7 @@ with tab1:
     with col_m4:
         st.markdown(f"""
         <div class="metric-card">
-            <div class="metric-label">F1-Score Weighted</div>
+            <div class="metric-label">Weighted F1-Score</div>
             <div class="metric-value">{tfidf_res['f1_score']*100:.1f}%</div>
             <div class="metric-sub">TF-IDF vs {count_res['f1_score']*100:.1f}% Count</div>
         </div>
@@ -350,23 +339,23 @@ with tab1:
     col_chart, col_cm = st.columns([1.1, 0.9])
     
     with col_chart:
-        st.subheader("📈 Grafik Perbandingan Metrik Evaluasi")
+        st.subheader("📈 Evaluation Metrics Comparison")
         metrics_df = pd.DataFrame([
-            {"Model": "Naive Bayes (Frekuensi Kata)", "Metrik": "Accuracy", "Nilai (%)": count_res["accuracy"] * 100},
-            {"Model": "Naive Bayes (Frekuensi Kata)", "Metrik": "Precision", "Nilai (%)": count_res["precision"] * 100},
-            {"Model": "Naive Bayes (Frekuensi Kata)", "Metrik": "Recall", "Nilai (%)": count_res["recall"] * 100},
-            {"Model": "Naive Bayes (Frekuensi Kata)", "Metrik": "F1-Score", "Nilai (%)": count_res["f1_score"] * 100},
+            {"Model": "Naive Bayes (Word Frequency)", "Metric": "Accuracy", "Score (%)": count_res["accuracy"] * 100},
+            {"Model": "Naive Bayes (Word Frequency)", "Metric": "Precision", "Score (%)": count_res["precision"] * 100},
+            {"Model": "Naive Bayes (Word Frequency)", "Metric": "Recall", "Score (%)": count_res["recall"] * 100},
+            {"Model": "Naive Bayes (Word Frequency)", "Metric": "F1-Score", "Score (%)": count_res["f1_score"] * 100},
             
-            {"Model": "Naive Bayes (TF-IDF)", "Metrik": "Accuracy", "Nilai (%)": tfidf_res["accuracy"] * 100},
-            {"Model": "Naive Bayes (TF-IDF)", "Metrik": "Precision", "Nilai (%)": tfidf_res["precision"] * 100},
-            {"Model": "Naive Bayes (TF-IDF)", "Metrik": "Recall", "Nilai (%)": tfidf_res["recall"] * 100},
-            {"Model": "Naive Bayes (TF-IDF)", "Metrik": "F1-Score", "Nilai (%)": tfidf_res["f1_score"] * 100},
+            {"Model": "Naive Bayes (TF-IDF)", "Metric": "Accuracy", "Score (%)": tfidf_res["accuracy"] * 100},
+            {"Model": "Naive Bayes (TF-IDF)", "Metric": "Precision", "Score (%)": tfidf_res["precision"] * 100},
+            {"Model": "Naive Bayes (TF-IDF)", "Metric": "Recall", "Score (%)": tfidf_res["recall"] * 100},
+            {"Model": "Naive Bayes (TF-IDF)", "Metric": "F1-Score", "Score (%)": tfidf_res["f1_score"] * 100},
         ])
         
         fig_metrics = px.bar(
             metrics_df,
-            x="Metrik",
-            y="Nilai (%)",
+            x="Metric",
+            y="Score (%)",
             color="Model",
             barmode="group",
             text_auto=".1f",
@@ -385,11 +374,12 @@ with tab1:
         st.subheader(f"🎯 Confusion Matrix: {active_results['name']}")
         cm = active_results["confusion_matrix"]
         labels = active_results["classes"]
+        label_title_map = {"positif": "Positive", "negatif": "Negative"}
         
         fig_cm = px.imshow(
             cm,
-            x=[f"Prediksi {l.title()}" for l in labels],
-            y=[f"Aktual {l.title()}" for l in labels],
+            x=[f"Pred: {label_title_map.get(l, l.title())}" for l in labels],
+            y=[f"True: {label_title_map.get(l, l.title())}" for l in labels],
             text_auto=True,
             color_continuous_scale="Purples",
             aspect="auto"
@@ -405,7 +395,7 @@ with tab1:
     st.divider()
 
     # Feature Importance Top Words
-    st.subheader(f"🔥 Kata Kunci Paling Berpengaruh ({active_results['name']})")
+    st.subheader(f"🔥 Most Influential Keywords ({active_results['name']})")
     top_feats = trainer.get_top_features(feature_type=active_model_key, top_n=10)
     
     if top_feats is not None:
@@ -413,10 +403,10 @@ with tab1:
         with col_kw1:
             fig_pos_words = px.bar(
                 top_feats["positive"],
-                x="Skor Bobot",
-                y="Kata/Frasa",
+                x="Weight Score",
+                y="Word/Phrase",
                 orientation="h",
-                title="Top 10 Kata Indikator POSITIF",
+                title="Top 10 POSITIVE Indicator Words",
                 color_discrete_sequence=["#10b981"]
             )
             fig_pos_words.update_layout(paper_bgcolor="rgba(0,0,0,0)", plot_bgcolor="rgba(0,0,0,0)", font=dict(color="#f1f5f9"), yaxis=dict(autorange="reversed"))
@@ -425,10 +415,10 @@ with tab1:
         with col_kw2:
             fig_neg_words = px.bar(
                 top_feats["negative"],
-                x="Skor Bobot",
-                y="Kata/Frasa",
+                x="Weight Score",
+                y="Word/Phrase",
                 orientation="h",
-                title="Top 10 Kata Indikator NEGATIF",
+                title="Top 10 NEGATIVE Indicator Words",
                 color_discrete_sequence=["#f43f5e"]
             )
             fig_neg_words.update_layout(paper_bgcolor="rgba(0,0,0,0)", plot_bgcolor="rgba(0,0,0,0)", font=dict(color="#f1f5f9"), yaxis=dict(autorange="reversed"))
@@ -437,18 +427,19 @@ with tab1:
     st.divider()
     
     # Classification Report Per Class Table
-    st.subheader(f"📋 Laporan Klasifikasi Per Kelas ({active_results['name']})")
+    st.subheader(f"📋 Per-Class Classification Report ({active_results['name']})")
     rep_dict = active_results["classification_report"]
     
     rep_rows = []
     for cls_name in ["negatif", "positif"]:
         if cls_name in rep_dict:
+            display_name = "Negative" if cls_name == "negatif" else "Positive"
             rep_rows.append({
-                "Kelas Sentimen": cls_name.title(),
+                "Sentiment Class": display_name,
                 "Precision": f"{rep_dict[cls_name]['precision']*100:.1f}%",
                 "Recall": f"{rep_dict[cls_name]['recall']*100:.1f}%",
                 "F1-Score": f"{rep_dict[cls_name]['f1-score']*100:.1f}%",
-                "Jumlah Sample (Support)": int(rep_dict[cls_name]['support'])
+                "Support (Samples)": int(rep_dict[cls_name]['support'])
             })
             
     df_rep = pd.DataFrame(rep_rows)
@@ -457,16 +448,16 @@ with tab1:
     st.divider()
     
     # Misclassification Inspector
-    st.subheader("🔍 Pemeriksaan Contoh Salah Prediksi (Misclassification Analysis)")
-    st.markdown("Fitur ini menampilkan contoh ulasan dari data uji di mana **prediksi model berbeda dengan label sebenarnya**.")
+    st.subheader("🔍 Misclassification Analysis (Error Inspection)")
+    st.markdown("This inspection table isolates test instances where **the model prediction differed from the ground truth label**.")
     
     df_mis = active_results["misclassified_df"]
     if len(df_mis) == 0:
-        st.success(f"🎉 Luar biasa! Model {active_results['name']} mengklasifikasikan seluruh data uji dengan 100% tepat.")
+        st.success(f"🎉 Outstanding! Model {active_results['name']} correctly classified all test samples with 100% accuracy.")
     else:
-        st.warning(f"Ditemukan **{len(df_mis)}** contoh salah prediksi dari total **{active_results['total_test']}** data uji.")
+        st.warning(f"Identified **{len(df_mis)}** misclassified samples out of **{active_results['total_test']}** total test samples.")
         st.dataframe(
-            df_mis[["Index", "Kategori", "Ulasan Asli", "Label Sebenarnya", "Prediksi Model", "Kepercayaan"]],
+            df_mis[["Index", "Category", "Original Review", "True Label", "Predicted Label", "Confidence"]],
             use_container_width=True,
             hide_index=True
         )
@@ -475,120 +466,175 @@ with tab1:
 # TAB 2: SINGLE REVIEW PREDICTION
 # ==============================================================================
 with tab2:
-    st.header("✍️ Prediksi Sentimen Ulasan Tunggal")
-    st.markdown("Masukkan ulasan produk atau aplikasi pada kolom di bawah ini untuk menganalisis sentimen secara real-time.")
+    st.header("✍️ Single Review Sentiment Prediction")
+    st.markdown("Enter a product or mobile application review in the text box below to analyze sentiment in real-time.")
     
     # Sample Review Quick Selection Buttons
-    st.markdown("**💡 Atau pilih contoh ulasan sampel untuk uji cepat:**")
+    st.markdown("**💡 Or select a preloaded sample review for quick testing:**")
     col_s1, col_s2, col_s3, col_s4 = st.columns(4)
-    
-    sample_text = ""
-    if col_s1.button("📱 Produk Positif (HP)", use_container_width=True):
-        sample_text = "Kamera HP sangat jernih, hasil foto malam hari memuaskan. Seller ramah dan pengiriman sangat cepat!"
-    if col_s2.button("👕 Produk Negatif (Baju)", use_container_width=True):
-        sample_text = "Kualitas barang sangat buruk, bahan tipis gampang sobek dan ukurannya tidak sesuai deskripsi. Kecewa!"
-    if col_s3.button("💳 Aplikasi Positif (E-Wallet)", use_container_width=True):
-        sample_text = "Aplikasi dompet digital sangat mudah digunakan, transfer antar bank gratis tanpa biaya admin dan topup cepat."
-    if col_s4.button("⚡ Aplikasi Negatif (Lag)", use_container_width=True):
-        sample_text = "Aplikasi sering crash dan keluar sendiri saat checkout pembayaran. Sangat mengganggu dan bikin jengkel."
-        
+
+    sample_reviews = {
+        "hp": "Kamera HP sangat jernih, hasil foto malam hari memuaskan. Seller ramah dan pengiriman sangat cepat!",
+        "baju": "Kualitas barang sangat buruk, bahan tipis gampang sobek dan ukurannya tidak sesuai deskripsi. Kecewa!",
+        "ewallet": "Aplikasi dompet digital sangat mudah digunakan, transfer antar bank gratis tanpa biaya admin dan topup cepat.",
+        "lag": "Aplikasi sering crash dan keluar sendiri saat checkout pembayaran. Sangat mengganggu dan bikin jengkel."
+    }
+
+    if "review_input" not in st.session_state:
+        st.session_state["review_input"] = ""
+    if "last_result" not in st.session_state:
+        st.session_state["last_result"] = None
+    if "last_result_text" not in st.session_state:
+        st.session_state["last_result_text"] = ""
+    if "last_result_model" not in st.session_state:
+        st.session_state["last_result_model"] = active_model_key
+
+    def set_sample_and_analyze(text):
+        st.session_state["review_input"] = text
+        res_sample = engine.predict_single(text, model_type=active_model_key)
+        st.session_state["last_result"] = res_sample
+        st.session_state["last_result_text"] = text
+        st.session_state["last_result_model"] = active_model_key
+
+    col_s1.button("📱 Positive Product (Phone)", use_container_width=True, on_click=set_sample_and_analyze, args=(sample_reviews["hp"],))
+    col_s2.button("👕 Negative Product (Shirt)", use_container_width=True, on_click=set_sample_and_analyze, args=(sample_reviews["baju"],))
+    col_s3.button("💳 Positive App (E-Wallet)", use_container_width=True, on_click=set_sample_and_analyze, args=(sample_reviews["ewallet"],))
+    col_s4.button("⚡ Negative App (Crash/Lag)", use_container_width=True, on_click=set_sample_and_analyze, args=(sample_reviews["lag"],))
+
     input_text = st.text_area(
-        "Masukkan Teks Ulasan:",
-        value=sample_text,
+        "Enter Review Text:",
+        key="review_input",
         height=130,
-        placeholder="Contoh: Pengiriman barang sangat cepat, produk original dan berfungsi dengan baik. Recommended seller!"
+        placeholder="Example: Fast shipping, high-quality product, and excellent seller communication. Highly recommended!"
     )
-    
-    if st.button("🚀 Analisis Sentimen Sekarang", type="primary", use_container_width=True):
-        if not input_text.strip():
-            st.error("Silakan masukkan teks ulasan terlebih dahulu.")
-        else:
-            res = engine.predict_single(input_text, model_type=active_model_key)
-            
-            st.divider()
-            col_res1, col_res2 = st.columns([1.1, 0.9])
-            
-            with col_res1:
-                st.subheader("📌 Hasil Klasifikasi Sentimen")
-                lbl = str(res["label"])
-                conf = float(res["confidence"]) * 100
-                
-                if lbl == "positif":
-                    st.markdown(f'<div class="badge-positive">😊 SENTIMEN: POSITIF ({conf:.1f}% Confident)</div>', unsafe_allow_html=True)
-                else:
-                    st.markdown(f'<div class="badge-negative">😡 SENTIMEN: NEGATIF ({conf:.1f}% Confident)</div>', unsafe_allow_html=True)
-                    
-                st.write("")
-                st.markdown(f"**Model Digunakan:** `{active_results['name']}`")
-                st.markdown(f"**Teks Setelah Preprocessing:** `{res['cleaned_text']}`")
-                
-                # Probability Table
-                st.markdown("**Distribusi Probabilitas:**")
-                prob_df = pd.DataFrame([
-                    {"Sentimen": "Positif 😊", "Probabilitas": f"{res['probabilities']['positif']*100:.2f}%"},
-                    {"Sentimen": "Negatif 😡", "Probabilitas": f"{res['probabilities']['negatif']*100:.2f}%"}
-                ])
-                st.dataframe(prob_df, hide_index=True, use_container_width=True)
-                
-            with col_res2:
-                st.subheader("📊 Donut Chart Probabilitas")
-                prob_donut = pd.DataFrame({
-                    "Sentimen": ["Positif", "Negatif"],
-                    "Nilai": [res['probabilities']['positif'], res['probabilities']['negatif']]
-                })
-                fig_donut = px.pie(
-                    prob_donut,
-                    values="Nilai",
-                    names="Sentimen",
-                    hole=0.6,
-                    color="Sentimen",
-                    color_discrete_map={"Positif": "#10b981", "Negatif": "#f43f5e"}
-                )
-                fig_donut.update_layout(
-                    paper_bgcolor="rgba(0,0,0,0)",
-                    plot_bgcolor="rgba(0,0,0,0)",
-                    font=dict(color="#f1f5f9"),
-                    legend=dict(orientation="h", yanchor="bottom", y=-0.1, xanchor="center", x=0.5)
-                )
-                st.plotly_chart(fig_donut, use_container_width=True)
-                
-            st.write("")
-            st.subheader("🔤 Kata Kunci Penentu Sentimen (Feature Highlights)")
-            words_contrib = res["highlighted_words"]
-            if len(words_contrib) > 0:
-                chips_html = ""
-                for item in words_contrib:
-                    cls_name = "chip-pos" if item["polarity"] == "positif" else "chip-neg"
-                    icon = "👍" if item["polarity"] == "positif" else "👎"
-                    chips_html += f'<span class="chip {cls_name}">{icon} {item["word"]}</span>'
-                st.markdown(chips_html, unsafe_allow_html=True)
-                
-                st.write("")
-                words_df = pd.DataFrame(words_contrib)
-                words_df.columns = ["Kata/Frasa", "Skor Positif", "Skor Negatif", "Kecenderungan"]
-                st.dataframe(words_df, hide_index=True, use_container_width=True)
+
+    col_btn1, col_btn2 = st.columns([3, 1])
+
+    with col_btn1:
+        if st.button("🚀 Analyze Sentiment Now", type="primary", use_container_width=True):
+            input_val = st.session_state.get("review_input", "").strip()
+            if not input_val:
+                st.error("Please enter a review text first or select one of the samples above.")
+                st.session_state["last_result"] = None
             else:
-                st.info("Tidak ada kata kunci spesifik dalam kamus yang terdeteksi.")
+                res_calc = engine.predict_single(input_val, model_type=active_model_key)
+                st.session_state["last_result"] = res_calc
+                st.session_state["last_result_text"] = input_val
+                st.session_state["last_result_model"] = active_model_key
+
+    with col_btn2:
+        def clear_single_review():
+            st.session_state["review_input"] = ""
+            st.session_state["last_result"] = None
+            st.session_state["last_result_text"] = ""
+
+        st.button("🗑️ Reset Text", use_container_width=True, on_click=clear_single_review)
+
+    # Sync if model selection changed in sidebar
+    if (
+        st.session_state.get("last_result") is not None
+        and st.session_state.get("last_result_text")
+        and st.session_state.get("last_result_model") != active_model_key
+    ):
+        st.session_state["last_result"] = engine.predict_single(
+            st.session_state["last_result_text"],
+            model_type=active_model_key
+        )
+        st.session_state["last_result_model"] = active_model_key
+
+    res = st.session_state.get("last_result")
+    if res is not None:
+        st.divider()
+        col_res1, col_res2 = st.columns([1.1, 0.9])
+
+        with col_res1:
+            st.subheader("📌 Sentiment Classification Result")
+            lbl = str(res["label"])
+            conf = float(res["confidence"]) * 100
+
+            if lbl == "positif":
+                st.markdown(f'<div class="badge-positive">😊 SENTIMENT: POSITIVE ({conf:.1f}% Confidence)</div>', unsafe_allow_html=True)
+            else:
+                st.markdown(f'<div class="badge-negative">😡 SENTIMENT: NEGATIVE ({conf:.1f}% Confidence)</div>', unsafe_allow_html=True)
+
+            st.write("")
+            st.markdown(f"**Model Used:** `{active_results['name']}`")
+            st.markdown(f"**Preprocessed Text:** `{res['cleaned_text']}`")
+
+            # Probability Table
+            st.markdown("**Probability Distribution:**")
+            prob_df = pd.DataFrame([
+                {"Sentiment": "Positive 😊", "Probability": f"{res['probabilities']['positif']*100:.2f}%"},
+                {"Sentiment": "Negative 😡", "Probability": f"{res['probabilities']['negatif']*100:.2f}%"}
+            ])
+            st.dataframe(prob_df, hide_index=True, use_container_width=True)
+
+        with col_res2:
+            st.subheader("📊 Probability Donut Chart")
+            prob_donut = pd.DataFrame({
+                "Sentiment": ["Positive", "Negative"],
+                "Value": [res['probabilities']['positif'], res['probabilities']['negatif']]
+            })
+            fig_donut = px.pie(
+                prob_donut,
+                values="Value",
+                names="Sentiment",
+                hole=0.6,
+                color="Sentiment",
+                color_discrete_map={"Positive": "#10b981", "Negative": "#f43f5e"}
+            )
+            fig_donut.update_layout(
+                paper_bgcolor="rgba(0,0,0,0)",
+                plot_bgcolor="rgba(0,0,0,0)",
+                font=dict(color="#f1f5f9"),
+                legend=dict(orientation="h", yanchor="bottom", y=-0.1, xanchor="center", x=0.5)
+            )
+            st.plotly_chart(fig_donut, use_container_width=True)
+
+        st.write("")
+        st.subheader("🔤 Influential Sentiment Keywords (Feature Highlights)")
+        words_contrib = res["highlighted_words"]
+        if len(words_contrib) > 0:
+            chips_html = ""
+            for item in words_contrib:
+                cls_name = "chip-pos" if item["polarity"] == "positif" else "chip-neg"
+                icon = "👍" if item["polarity"] == "positif" else "👎"
+                chips_html += f'<span class="chip {cls_name}">{icon} {item["word"]}</span>'
+            st.markdown(chips_html, unsafe_allow_html=True)
+
+            st.write("")
+            words_df = pd.DataFrame([
+                {
+                    "Word/Phrase": item["word"],
+                    "Positive Score": f"{item['positif_score']:.4f}",
+                    "Negative Score": f"{item['negatif_score']:.4f}",
+                    "Polarity Tendency": "Positive 👍" if item["polarity"] == "positif" else "Negative 👎"
+                }
+                for item in words_contrib
+            ])
+            st.dataframe(words_df, hide_index=True, use_container_width=True)
+        else:
+            st.info("No specific vocabulary keywords detected.")
 
 # ==============================================================================
 # TAB 3: BATCH PREDICTION & EXPORT
 # ==============================================================================
 with tab3:
-    st.header("📁 Prediksi Massal (Batch) & Ekspor Hasil")
-    st.markdown("Unggah berkas CSV/Excel ulasan Anda atau jalankan klasifikasi otomatis pada kumpulan ulasan.")
+    st.header("📁 Batch Prediction & Results Export")
+    st.markdown("Upload your review dataset in CSV or Excel format, or run automated sentiment classification on preloaded reviews.")
     
     col_up1, col_up2 = st.columns([1.5, 1])
     
     with col_up1:
         uploaded_file = st.file_uploader(
-            "Unggah Berkas Ulasan (CSV atau Excel):",
+            "Upload Review Dataset (CSV or Excel):",
             type=["csv", "xlsx"],
-            help="Pastikan berkas memiliki setidaknya satu kolom yang berisi teks ulasan."
+            help="Ensure your file contains at least one text column containing reviews."
         )
         
     with col_up2:
-        st.markdown("**Atau Gunakan Dataset Bawaan:**")
-        use_default_batch = st.checkbox("Gunakan Dataset Bawaan (220 ulasan)", value=True)
+        st.markdown("**Or Use Built-in Dataset:**")
+        use_default_batch = st.checkbox(f"Use Built-in Dataset ({len(trainer.df)} reviews)", value=True)
         
     df_to_predict = None
     text_col = "ulasan"
@@ -600,17 +646,17 @@ with tab3:
             else:
                 df_to_predict = pd.read_excel(uploaded_file)
                 
-            st.success(f"Berkas berhasil diunggah! Ditemukan {len(df_to_predict)} baris data.")
-            text_col = st.selectbox("Pilih Kolom Teks Ulasan:", options=df_to_predict.columns)
+            st.success(f"File uploaded successfully! Found {len(df_to_predict)} rows of data.")
+            text_col = st.selectbox("Select Review Text Column:", options=df_to_predict.columns)
         except Exception as e:
-            st.error(f"Gagal membaca berkas: {e}")
+            st.error(f"Failed to read uploaded file: {e}")
     elif use_default_batch:
         df_to_predict = trainer.df.copy()
         text_col = "ulasan"
         
     if df_to_predict is not None:
-        if st.button("⚡ Jalankan Klasifikasi Massal Sekarang", type="primary", use_container_width=True):
-            with st.spinner("Memproses prediksi sentimen massal..."):
+        if st.button("⚡ Run Batch Classification Now", type="primary", use_container_width=True):
+            with st.spinner("Processing batch sentiment predictions..."):
                 batch_res = engine.predict_batch(df_to_predict, text_column=text_col, model_type=active_model_key)
                 
                 pos_count = (batch_res["prediksi_sentimen"] == "positif").sum()
@@ -618,24 +664,24 @@ with tab3:
                 total_cnt = len(batch_res)
                 
                 st.divider()
-                st.subheader("📊 Ringkasan Hasil Analisis Sentimen Massal")
+                st.subheader("📊 Batch Sentiment Analysis Summary")
                 
                 col_b1, col_b2, col_b3, col_b4 = st.columns(4)
-                col_b1.metric("Total Ulasan", f"{total_cnt}")
-                col_b2.metric("Sentimen Positif 😊", f"{pos_count} ({pos_count/total_cnt*100:.1f}%)")
-                col_b3.metric("Sentimen Negatif 😡", f"{neg_count} ({neg_count/total_cnt*100:.1f}%)")
-                col_b4.metric("Rata-rata Kepercayaan", f"{batch_res['skor_kepercayaan'].mean()*100:.1f}%")
+                col_b1.metric("Total Reviews", f"{total_cnt}")
+                col_b2.metric("Positive Sentiment 😊", f"{pos_count} ({pos_count/total_cnt*100:.1f}%)")
+                col_b3.metric("Negative Sentiment 😡", f"{neg_count} ({neg_count/total_cnt*100:.1f}%)")
+                col_b4.metric("Average Confidence", f"{batch_res['confidence_score'].mean()*100:.1f}%")
                 
                 st.write("")
                 col_chart1, col_chart2 = st.columns(2)
                 
                 with col_chart1:
                     fig_b_pie = px.pie(
-                        names=["Positif", "Negatif"],
+                        names=["Positive", "Negative"],
                         values=[pos_count, neg_count],
-                        title="Distribusi Sentimen Keseluruhan",
-                        color=["Positif", "Negatif"],
-                        color_discrete_map={"Positif": "#10b981", "Negatif": "#f43f5e"},
+                        title="Overall Sentiment Distribution",
+                        color=["Positive", "Negative"],
+                        color_discrete_map={"Positive": "#10b981", "Negative": "#f43f5e"},
                         hole=0.5
                     )
                     fig_b_pie.update_layout(paper_bgcolor="rgba(0,0,0,0)", font=dict(color="#f1f5f9"))
@@ -643,24 +689,25 @@ with tab3:
                     
                 with col_chart2:
                     if "kategori" in batch_res.columns:
-                        cat_df = batch_res.groupby(["kategori", "prediksi_sentimen"]).size().reset_index(name="Jumlah")
+                        cat_df = batch_res.groupby(["kategori", "predicted_sentiment"]).size().reset_index(name="Count")
                         fig_cat = px.bar(
                             cat_df,
                             x="kategori",
-                            y="Jumlah",
-                            color="prediksi_sentimen",
-                            title="Distribusi Sentimen Berdasarkan Kategori",
+                            y="Count",
+                            color="predicted_sentiment",
+                            title="Sentiment Distribution by Category",
                             barmode="group",
-                            color_discrete_map={"positif": "#10b981", "negatif": "#f43f5e"}
+                            color_discrete_map={"Positive": "#10b981", "Negative": "#f43f5e"}
                         )
-                        fig_cat.update_layout(paper_bgcolor="rgba(0,0,0,0)", plot_bgcolor="rgba(0,0,0,0)", font=dict(color="#f1f5f9"))
+                        fig_cat.update_layout(paper_bgcolor="rgba(0,0,0,0)", plot_bgcolor="rgba(0,0,0,0)", font=dict(color="#f1f5f9"), xaxis_title="Category", yaxis_title="Count")
                         st.plotly_chart(fig_cat, use_container_width=True)
                         
                 st.divider()
-                st.subheader("📋 Tabel Prediksi Lengkap")
+                st.subheader("📋 Full Prediction Table")
                 
+                display_cols = [c for c in [text_col, "cleaned_text", "predicted_sentiment", "confidence_score", "probabilitas_positif", "probabilitas_negatif"] if c in batch_res.columns]
                 st.dataframe(
-                    batch_res[[text_col, "cleaned_text", "prediksi_sentimen", "skor_kepercayaan", "probabilitas_positif", "probabilitas_negatif"]],
+                    batch_res[display_cols],
                     use_container_width=True,
                     hide_index=True
                 )
@@ -668,9 +715,9 @@ with tab3:
                 # CSV Export Button
                 csv_buffer = batch_res.to_csv(index=False).encode('utf-8')
                 st.download_button(
-                    label="📥 Unduh Hasil Analisis Sentimen (CSV)",
+                    label="📥 Download Sentiment Analysis Results (CSV)",
                     data=csv_buffer,
-                    file_name="hasil_analisis_sentimen.csv",
+                    file_name="sentiment_analysis_results.csv",
                     mime="text/csv",
                     type="primary",
                     use_container_width=True
@@ -680,49 +727,52 @@ with tab3:
 # TAB 4: DATASET EXPLORER & THEORY
 # ==============================================================================
 with tab4:
-    st.header("📖 Eksplorasi Dataset & Teori Metodologi")
+    st.header("📖 Dataset Explorer & Methodology Theory")
     
-    st.subheader("📚 Dasar Teori & Formulasi Matematika")
+    st.subheader("📚 Theoretical Foundations & Mathematical Formulations")
     
     st.markdown(r"""
-    ### 1. Analisis Sentimen & Klasifikasi Terawasi (Supervised Classification)
-    Analisis sentimen adalah proses ekstraksi opini dan evaluasi terhadap teks (ulasan produk atau aplikasi) untuk menentukan polaritas emosi. Klasifikasi terawasi memanfaatkan dataset yang telah diberi label (*positif* dan *negatif*) untuk melatih model statistik.
+    ### 1. Sentiment Analysis & Supervised Classification
+    Sentiment analysis is the process of computationally extracting opinions, evaluations, and emotional polarity from text (such as product and application reviews). Supervised learning utilizes labeled datasets (*positive* and *negative*) to train statistical predictive models.
 
     ### 2. Multinomial Naive Bayes (MNB)
-    Multinomial Naive Bayes adalah varian Naive Bayes yang sangat efektif untuk representasi frekuensi kata (*word counts*) atau bobot *TF-IDF* dalam dokumen teks.
+    Multinomial Naive Bayes is a specialized formulation of Naive Bayes optimized for discrete features such as term frequencies (*word counts*) or weighted *TF-IDF* scores across document vectors.
 
-    Teorema Bayes menyatakan:
+    Bayes' Theorem is expressed as:
     $$P(c|d) = \frac{P(c) \cdot P(d|c)}{P(d)}$$
 
-    Dengan asumsi independensi fitur (*naive assumption*):
+    Applying the naive feature conditional independence assumption:
     $$P(c|d) \propto P(c) \prod_{i=1}^{n} P(t_i|c)$$
 
-    Di mana:
-    - $P(c)$ adalah probabilitas prior dari kelas $c \in \{\text{positif}, \text{negatif}\}$.
-    - $P(t_i|c)$ adalah probabilitas kemunculan term/kata $t_i$ dalam kelas $c$, dihitung menggunakan *Laplace Smoothing* ($\alpha = 1.0$):
+    Where:
+    - $P(c)$ represents the class prior probability for $c \in \{\text{positive}, \text{negative}\}$.
+    - $P(t_i|c)$ denotes the conditional probability of term $t_i$ occurring given class $c$, estimated using **Laplace Smoothing** ($\alpha = 1.0$):
     
     $$P(t_i|c) = \frac{N_{c, t_i} + \alpha}{\sum_{t'} N_{c, t'} + \alpha \cdot |V|}$$
+    
+    - $N_{c, t_i}$ is the frequency of word $t_i$ across documents of class $c$.
+    - $|V|$ denotes the total vocabulary dimension (number of unique tokens).
 
-    ### 3. Ekstraksi Fitur Teks: CountVectorizer vs TF-IDF
-    - **Frekuensi Kata (CountVectorizer)**: Mengukur jumlah kemunculan absolut setiap kata/n-gram dalam dokumen.
-    - **TF-IDF (Term Frequency-Inverse Document Frequency)**: Memberikan bobot tinggi pada kata yang sering muncul dalam dokumen tertentu tetapi jarang muncul di dokumen lain:
+    ### 3. Text Feature Extraction: CountVectorizer vs. TF-IDF
+    - **Word Frequency (`CountVectorizer`)**: Constructs a document-term matrix of absolute term occurrences or n-grams.
+    - **TF-IDF (`TfidfVectorizer`)**: Discounts ubiquitously frequent words and amplifies terms with high discriminative power for specific classes:
     
     $$\text{TF-IDF}(t, d, D) = \text{TF}(t, d) \times \log\left(\frac{|D|}{1 + |\{d \in D : t \in d\}|}\right)$$
     """)
     
     st.divider()
-    st.subheader("🔍 Eksplorasi Data Mentah (Dataset Explorer)")
+    st.subheader("🔍 Raw Dataset Explorer")
     
     df_raw = trainer.df
     
-    filter_cat = st.selectbox("Filter Kategori:", options=["Semua Kategori"] + list(df_raw["kategori"].unique() if "kategori" in df_raw.columns else []))
-    filter_sent = st.selectbox("Filter Sentimen:", options=["Semua Sentimen", "positif", "negatif"])
+    filter_cat = st.selectbox("Filter Category:", options=["All Categories"] + list(df_raw["kategori"].unique() if "kategori" in df_raw.columns else []))
+    filter_sent = st.selectbox("Filter Sentiment:", options=["All Sentiments", "positif", "negatif"], format_func=lambda x: "All Sentiments" if x == "All Sentiments" else ("Positive" if x == "positif" else "Negative"))
     
     filtered_df = df_raw.copy()
-    if filter_cat != "Semua Kategori":
+    if filter_cat != "All Categories":
         filtered_df = filtered_df[filtered_df["kategori"] == filter_cat]
-    if filter_sent != "Semua Sentimen":
+    if filter_sent != "All Sentiments":
         filtered_df = filtered_df[filtered_df["sentimen"] == filter_sent]
         
-    st.write(f"Menampilkan **{len(filtered_df)}** dari **{len(df_raw)}** total ulasan.")
+    st.write(f"Showing **{len(filtered_df)}** of **{len(df_raw)}** total reviews.")
     st.dataframe(filtered_df, use_container_width=True, hide_index=True)
