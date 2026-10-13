@@ -55,7 +55,7 @@ sentiment-analysis-product-app/
 ├── README.md                # Project documentation and setup guide
 ├── requirements.txt         # Python project dependencies
 ├── app.py                   # Streamlit web application & interactive UI
-├── generate_dataset.py      # Dataset generator script
+├── streamlit_app.py         # Entry point for Streamlit Community Cloud
 ├── data/
 │   └── dataset_ulasan.csv   # Labeled dataset of product & application reviews
 └── src/
