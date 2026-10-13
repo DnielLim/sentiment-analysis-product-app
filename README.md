@@ -8,7 +8,7 @@
 
 A machine learning web dashboard built with **Python**, **Streamlit**, and **Scikit-Learn** implementing the **Multinomial Naive Bayes** algorithm to classify customer reviews of products and mobile applications into **Positive** and **Negative** sentiment.
 
-> 🚀 **Live Demo**: Coba aplikasi secara langsung tanpa perlu instalasi di [**sentiment-analysis-dl.streamlit.app**](https://sentiment-analysis-dl.streamlit.app/)
+> 🚀 **Live Demo**: Try the web application live without any installation at [**sentiment-analysis-dl.streamlit.app**](https://sentiment-analysis-dl.streamlit.app/)
 
 ---
 
