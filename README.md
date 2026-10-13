@@ -4,8 +4,11 @@
 [![Streamlit](https://img.shields.io/badge/Streamlit-1.32%2B-FF4B4B?logo=streamlit&logoColor=white)](https://streamlit.io/)
 [![Scikit-Learn](https://img.shields.io/badge/Scikit--Learn-1.3%2B-F7931E?logo=scikit-learn&logoColor=white)](https://scikit-learn.org/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](https://opensource.org/licenses/MIT)
+[![Streamlit App](https://static.streamlit.io/badges/streamlit_badge_black_white.svg)](https://sentiment-analysis-dl.streamlit.app/)
 
 A machine learning web dashboard built with **Python**, **Streamlit**, and **Scikit-Learn** implementing the **Multinomial Naive Bayes** algorithm to classify customer reviews of products and mobile applications into **Positive** and **Negative** sentiment.
+
+> 🚀 **Live Demo**: Coba aplikasi secara langsung tanpa perlu instalasi di [**sentiment-analysis-dl.streamlit.app**](https://sentiment-analysis-dl.streamlit.app/)
 
 ---
 
