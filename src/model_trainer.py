@@ -40,8 +40,19 @@ class SentimentModelTrainer:
         else:
             self.df = pd.read_csv(self.data_path)
             
-        # Add cleaned text column
-        self.df["cleaned_ulasan"] = self.df["ulasan"].apply(lambda x: clean_text(x, remove_stopwords=False))
+        # Filter binary classes (positif & negatif) sesuai spesifikasi tugas
+        if "sentimen" in self.df.columns:
+            self.df = self.df[self.df["sentimen"].isin(["positif", "negatif"])].copy()
+
+        # Pastikan kolom 'ulasan' dan 'ulasan_bersih' selalu tersedia
+        if "ulasan" not in self.df.columns and "ulasan_bersih" in self.df.columns:
+            self.df["ulasan"] = self.df["ulasan_bersih"]
+        elif "ulasan_bersih" not in self.df.columns and "ulasan" in self.df.columns:
+            self.df["ulasan_bersih"] = self.df["ulasan"]
+
+        text_col = "ulasan" if "ulasan" in self.df.columns else self.df.columns[0]
+        self.text_col = text_col
+        self.df["cleaned_ulasan"] = self.df[text_col].apply(lambda x: clean_text(str(x), remove_stopwords=False))
         
         # Train-test split with fixed random state for 100% identical split
         X = self.df["cleaned_ulasan"]
@@ -119,7 +130,7 @@ class SentimentModelTrainer:
         misclassified = []
         for idx, true_lbl, pred_lbl, proba in zip(test_indices, y_true, y_pred, y_proba):
             if true_lbl != pred_lbl:
-                orig_text = self.df.loc[idx, "ulasan"]
+                orig_text = self.df.loc[idx, self.text_col] if hasattr(self, 'text_col') and self.text_col in self.df.columns else (self.df.loc[idx, "ulasan"] if "ulasan" in self.df.columns else self.df.loc[idx, "cleaned_ulasan"])
                 clean_text_val = self.df.loc[idx, "cleaned_ulasan"]
                 kat = self.df.loc[idx, "kategori"] if "kategori" in self.df.columns else "N/A"
                 
