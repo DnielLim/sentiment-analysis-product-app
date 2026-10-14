@@ -4,6 +4,7 @@ import numpy as np
 import plotly.express as px
 import plotly.graph_objects as go
 import io
+import os
 
 from src.model_trainer import SentimentModelTrainer
 from src.sentiment_engine import SentimentEngine
@@ -218,17 +219,6 @@ st.markdown("""
 </style>
 """, unsafe_allow_html=True)
 
-# Initialize Session State
-@st.cache_resource
-def load_and_train_models():
-    trainer = SentimentModelTrainer(data_path="data/dataset_ulasan.csv")
-    trainer.train_models()
-    engine = SentimentEngine(trainer)
-    return trainer, engine
-
-trainer, engine = load_and_train_models()
-results = trainer.results
-
 # Sidebar Configuration
 with st.sidebar:
     st.markdown("""
@@ -241,31 +231,90 @@ with st.sidebar:
     </div>
     """, unsafe_allow_html=True)
     
-    st.subheader("⚙️ Algorithm Settings")
-    
-    active_model_key = st.radio(
-        "Select Text Feature Extractor:",
-        options=["tfidf", "count"],
-        format_func=lambda x: "Multinomial Naive Bayes (TF-IDF)" if x == "tfidf" else "Multinomial Naive Bayes (Word Frequency)",
-        help="Compare Naive Bayes performance using TF-IDF weighting vs. Word Frequency (CountVectorizer)."
+    st.subheader("📂 Sumber Data Training")
+    dataset_options = {}
+    if os.path.exists("data/clean_data.csv"):
+        dataset_options["clean_data.csv (Hasil Preprocessing M1)"] = "data/clean_data.csv"
+    if os.path.exists("data/dataset_ulasan.csv"):
+        dataset_options["dataset_ulasan.csv (Bawaan Git)"] = "data/dataset_ulasan.csv"
+    dataset_options["📤 Upload File CSV Sendiri"] = "upload"
+        
+    selected_dataset_label = st.selectbox(
+        "Pilih Sumber Dataset:",
+        options=list(dataset_options.keys()),
+        index=0
     )
-    
-    selected_model_name = "TF-IDF" if active_model_key == "tfidf" else "Word Frequency"
-    active_results = results[active_model_key]
-    
-    st.divider()
-    st.subheader("📊 Training Dataset Statistics")
-    st.markdown(f"""
-    - 📦 **Total Dataset:** `{len(trainer.df)} reviews`
-    - 🏋️ **Training Set (80%):** `{len(trainer.X_train)} reviews`
-    - 🧪 **Test Set (20%):** `{len(trainer.X_test)} reviews`
-    - 🎯 **Split Method:** `Stratified Split (random_state=42)`
-    """)
-    
-    st.write("")
-    if st.button("🔄 Retrain Models", use_container_width=True, type="secondary"):
-        st.cache_resource.clear()
-        st.rerun()
+    selected_dataset_path = dataset_options[selected_dataset_label]
+
+    uploaded_df = None
+    if selected_dataset_path == "upload":
+        uploaded_train_file = st.file_uploader(
+            "Upload File CSV untuk Training:",
+            type=["csv"],
+            help="File harus memiliki kolom teks ulasan dan label sentimen ('positif'/'negatif')."
+        )
+        if uploaded_train_file is not None:
+            try:
+                uploaded_df = pd.read_csv(uploaded_train_file)
+                st.caption(f"📁 Ditemukan {len(uploaded_df)} baris data.")
+                col_txt = st.selectbox("Kolom Ulasan:", options=uploaded_df.columns, index=0)
+                available_sent_cols = [c for c in uploaded_df.columns if c != col_txt]
+                if available_sent_cols:
+                    col_snt = st.selectbox("Kolom Sentimen:", options=available_sent_cols, index=0)
+                    uploaded_df = uploaded_df.rename(columns={col_txt: "ulasan", col_snt: "sentimen"})
+                else:
+                    st.warning("File memerlukan kolom label sentimen!")
+            except Exception as e:
+                st.error(f"Gagal membaca file: {e}")
+
+    train_button = st.button("🚀 Latih Model Sekarang", type="primary", use_container_width=True)
+
+    if train_button:
+        if selected_dataset_path == "upload" and uploaded_df is None:
+            st.error("⚠️ Silakan upload file CSV terlebih dahulu sebelum melatih model!")
+        else:
+            with st.spinner("Sedang melatih model Naive Bayes..."):
+                new_trainer = SentimentModelTrainer()
+                if selected_dataset_path == "upload":
+                    new_trainer.train_models(df_input=uploaded_df)
+                    st.session_state["trained_dataset"] = f"Uploaded CSV ({len(uploaded_df)} ulasan)"
+                else:
+                    new_trainer.data_path = selected_dataset_path
+                    new_trainer.train_models()
+                    st.session_state["trained_dataset"] = selected_dataset_label
+                new_engine = SentimentEngine(new_trainer)
+                st.session_state["trainer"] = new_trainer
+                st.session_state["engine"] = new_engine
+            st.success("✅ Model berhasil dilatih!")
+
+    is_trained = "trainer" in st.session_state and st.session_state["trainer"] is not None
+
+    if is_trained:
+        st.divider()
+        st.subheader("⚙️ Algorithm Settings")
+        
+        active_model_key = st.radio(
+            "Select Text Feature Extractor:",
+            options=["tfidf", "count"],
+            format_func=lambda x: "Multinomial Naive Bayes (TF-IDF)" if x == "tfidf" else "Multinomial Naive Bayes (Word Frequency)",
+            help="Compare Naive Bayes performance using TF-IDF weighting vs. Word Frequency (CountVectorizer)."
+        )
+        
+        selected_model_name = "TF-IDF" if active_model_key == "tfidf" else "Word Frequency"
+        trainer = st.session_state["trainer"]
+        engine = st.session_state["engine"]
+        results = trainer.results
+        active_results = results[active_model_key]
+        
+        st.divider()
+        st.subheader("📊 Training Dataset Statistics")
+        st.markdown(f"""
+        - 📂 **Dataset Aktif:** `{st.session_state.get('trained_dataset', selected_dataset_label)}`
+        - 📦 **Total Dataset:** `{len(trainer.df)} reviews`
+        - 🏋️ **Training Set (80%):** `{len(trainer.X_train)} reviews`
+        - 🧪 **Test Set (20%):** `{len(trainer.X_test)} reviews`
+        - 🎯 **Split Method:** `Stratified Split (random_state=42)`
+        """)
 
 # Hero Header Banner
 st.markdown("""
@@ -276,6 +325,11 @@ st.markdown("""
     </div>
 </div>
 """, unsafe_allow_html=True)
+
+# Guard: Jika model belum dilatih, tampilkan panduan untuk klik tombol latih
+if not is_trained:
+    st.info("👈 **Model belum dilatih.** Silakan pilih sumber dataset di sidebar sebelah kiri, kemudian klik tombol **'🚀 Latih Model Sekarang'** untuk memulai training dan melihat evaluasi model.")
+    st.stop()
 
 # Main Navigation Tabs
 tab1, tab2, tab3, tab4 = st.tabs([
@@ -652,7 +706,7 @@ with tab3:
             st.error(f"Failed to read uploaded file: {e}")
     elif use_default_batch:
         df_to_predict = trainer.df.copy()
-        text_col = "ulasan"
+        text_col = "ulasan_bersih" if "ulasan_bersih" in df_to_predict.columns else "ulasan"
         
     if df_to_predict is not None:
         if st.button("⚡ Run Batch Classification Now", type="primary", use_container_width=True):
