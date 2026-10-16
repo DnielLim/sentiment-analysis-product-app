@@ -1,4 +1,4 @@
-# 🛍️ Sentiment Analysis Dashboard for Product & App Reviews
+🛍️ Sentiment Analysis Dashboard for Product & App Reviews
 
 [![Python](https://img.shields.io/badge/Python-3.9%2B-blue?logo=python&logoColor=white)](https://www.python.org/)
 [![Streamlit](https://img.shields.io/badge/Streamlit-1.32%2B-FF4B4B?logo=streamlit&logoColor=white)](https://streamlit.io/)
@@ -12,7 +12,7 @@ A machine learning web dashboard built with **Python**, **Streamlit**, and **Sci
 
 ---
 
-## 🚀 Key Features
+🚀 Key Features
 
 - **📊 Model Evaluation & Comparison**: Side-by-side comparative analysis of Naive Bayes powered by **Word Frequency (`CountVectorizer`)** vs. **TF-IDF (`TfidfVectorizer`)** evaluated on the identical stratified test set (Accuracy, Weighted Precision, Recall, F1-Score, and Confusion Matrix).
 - **🔍 Misclassification Inspector**: Deep-dive error analysis section that isolates test instances where model predictions deviated from ground truth labels.
@@ -20,11 +20,9 @@ A machine learning web dashboard built with **Python**, **Streamlit**, and **Sci
 - **📁 Batch Processing & CSV Export**: Upload custom CSV/Excel review datasets, run high-speed batch predictions, inspect statistical breakdowns, and export enriched classification results to CSV.
 - **📖 Dataset Explorer & Theoretical Formulations**: Comprehensive theoretical breakdown with interactive $\KaTeX$ formulas for Bayes' Theorem, Laplace Smoothing, and TF-IDF weighting, along with a searchable dataset filter.
 
----
+🧠 Methodology & Mathematical Formulation
 
-## 🧠 Methodology & Mathematical Formulation
-
-### 1. Multinomial Naive Bayes (MNB)
+1. Multinomial Naive Bayes (MNB)
 Multinomial Naive Bayes models the distribution of word frequencies in text documents:
 
 $$P(c|d) = \frac{P(c) \cdot P(d|c)}{P(d)}$$
@@ -39,15 +37,14 @@ Where:
 
 $$P(t_i|c) = \frac{N_{c, t_i} + \alpha}{\sum_{t'} N_{c, t'} + \alpha \cdot |V|}$$
 
-### 2. Feature Extraction: CountVectorizer vs TF-IDF
+2. Feature Extraction: CountVectorizer vs TF-IDF
 - **Word Frequency (`CountVectorizer`)**: Quantifies raw term occurrences within the document.
 - **TF-IDF (`TfidfVectorizer`)**: Discounts frequent global stopwords while prioritizing discriminative, category-specific terms:
 
 $$\text{TF-IDF}(t, d, D) = \text{TF}(t, d) \times \log\left(\frac{|D|}{1 + |\{d \in D : t \in d\}|}\right)$$
 
----
 
-## 📂 Project Structure
+📂 Project Structure
 
 ```text
 sentiment-analysis-product-app/
@@ -84,7 +81,7 @@ python -m venv .venv
 pip install -r requirements.txt
 ```
 
-### 3. Launch the Application
+3. Launch the Application
 ```bash
 streamlit run app.py
 ```
@@ -93,7 +90,7 @@ Open your web browser and navigate to `http://localhost:8501`.
 
 ---
 
-## 📦 Requirements
+📦 Requirements
 
 - `streamlit>=1.32.0`
 - `pandas>=2.0.0`
@@ -102,8 +99,7 @@ Open your web browser and navigate to `http://localhost:8501`.
 - `plotly>=5.18.0`
 - `openpyxl>=3.1.0`
 
----
 
-## 📄 License
+📄 License
 
 This project is licensed under the [MIT License](LICENSE).
