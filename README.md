@@ -10,6 +10,8 @@ A machine learning web dashboard built with **Python**, **Streamlit**, and **Sci
 
 > 🚀 **Live Demo**: Try the web application live without any installation at [**sentiment-analysis-dl.streamlit.app**](https://sentiment-analysis-dl.streamlit.app/)
 
+> **Link Video Presentasi**: [**Klik di sini**](https://drive.google.com/file/d/1M9jGlk7VNSiSU1MaRCgjYbOEhIFpmc7T/view?usp=drivesdk)
+
 ---
 
 🚀 Key Features
